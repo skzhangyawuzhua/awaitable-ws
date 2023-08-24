@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>awaitable ws example</title>
+  </head>
+
+  <body>
+    awaitable ws example
+
+    <script type="module">
+      import awaitableWs from "./index.js";
+
+      const url = "ws://127.0.0.1:9000/api";
+
+      const main = async () => {
+        const ws = new awaitableWs({ url });
+
+        const res = await ws.send({ arg1: "arg1" });
+
+        console.log("client recv server back by promise:");
+        console.log(res);
+
+        //ping pong
+        setInterval(() => {
+          ws.custom_send("ping");
+        }, 5000);
+      };
+
+      main();
+    </script>
+  </body>
+</html>

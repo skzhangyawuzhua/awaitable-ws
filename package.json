@@ -1,0 +1,46 @@
+{
+  "name": "awaitable-ws",
+  "version": "1.0.0",
+  "description": "awaitable websocket client . compatible with taro.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "testserver": "node ./test/server",
+    "nodeclient": "node ./test/node-client",
+    "webclient": "node ./test/web-client",
+    "build": "pnpm build_esm && pnpm build_cjs",
+    "build_esm": "rm -rf ./dist/esm && tsc -p ./tsconfig.json && node ./esbuild && mv ./dist/index.d.ts ./dist/esm/index.d.ts",
+    "build_cjs": "rm -rf ./dist/cjs && tsc -p ./tsconfig.json && node ./esbuild --type cjs --target node && mv ./dist/index.d.ts ./dist/cjs/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skzhangyawuzhua/awaitable-ws.git"
+  },
+  "keywords": [
+    "awaitable",
+    "websocket",
+    "promise",
+    "taro"
+  ],
+  "author": "zhangyawuzhua",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/skzhangyawuzhua/awaitable-ws/issues"
+  },
+  "homepage": "https://github.com/skzhangyawuzhua/awaitable-ws#readme",
+  "dependencies": {
+    "@tarojs/taro": "^3.6.13",
+    "@types/ws": "^8.5.5",
+    "esbuild": "^0.19.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "commander": "^11.0.0",
+    "express": "^4.18.2",
+    "ws": "^8.13.0"
+  },
+  "exports": {
+    "require": "./dist/cjs/index.js",
+    "default": "./dist/esm/index.js"
+  }
+}
