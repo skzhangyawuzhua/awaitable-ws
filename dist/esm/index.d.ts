@@ -4,7 +4,7 @@ interface wsConfig {
     url: string;
     is_taro?: boolean;
     protocols?: string;
-    openFn?: (msg: any) => void;
+    openFn?: () => void;
 }
 interface taro_ws extends Omit<Taro.SocketTask, "send" | "close"> {
     send: (n: string) => void;
@@ -17,10 +17,10 @@ declare class awaitableWs {
     wsp: WebSocket | NodeWs | taro_ws;
     private disable_reconnection;
     constructor(config: wsConfig);
+    handle_ws_open: () => void;
     private handle_ws_close;
     private connect_websocket;
     private get is_browser();
-    openFn: (msg: any) => void;
     private ensure_connected;
     private sleep;
     is_connected(): boolean;

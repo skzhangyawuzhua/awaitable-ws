@@ -9,13 +9,6 @@ console.log(`ws server start on ${port}`);
 wss.on("connection", (ws, request, rep) => {
   console.log("server recv connection");
 
-  // const allowedOrigins = ["http://127.0.0.1:8081", "http://localhost:8081"];
-  // const origin = request.headers.origin;
-
-  // ws.on("headers", headers => {
-  //   headers.push("Access-Control-Allow-Origin: *");
-  // });
-
   ws.on("message", bufferMsg => {
     const msg = bufferMsg.toString(); // JSON.parse(msg);
 

@@ -2,7 +2,7 @@ const awaitableWs = require("../../dist/cjs").default;
 
 const url = "ws://127.0.0.1:6000";
 
-const openFn = msg => {
+const openFn = () => {
   console.log("on open");
 };
 

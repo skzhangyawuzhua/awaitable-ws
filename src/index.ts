@@ -5,7 +5,7 @@ interface wsConfig {
   url: string;
   is_taro?: boolean; //小程序
   protocols?: string;
-  openFn?: (msg: any) => void;
+  openFn?: () => void;
 }
 
 interface request_handler {
@@ -25,23 +25,22 @@ class awaitableWs {
   private connected = false;
   wsp!: WebSocket | NodeWs | taro_ws;
   private disable_reconnection = false;
-  //   private check_timer: number;
 
   constructor(config: wsConfig) {
-    console.log(`globalThis ${globalThis}`);
-
     this.ws_config = config;
 
     this.connection_status_object = new Subject<boolean>();
 
     this.connect_websocket(config);
-
-    // this.check_timer = setInterval(() => {
-    //   if (this.connected) {
-    //     this.wsp.send("ping");
-    //   }
-    // }, 5000);
   }
+
+  public handle_ws_open = () => {
+    this.connection_status_object.next(true);
+
+    this.connected = true;
+
+    this.ws_config.openFn && this.ws_config.openFn();
+  };
 
   private handle_ws_close() {
     console.log("on close");
@@ -51,11 +50,17 @@ class awaitableWs {
     });
 
     this.callbacks.clear();
+
     this.connection_status_object.next(false);
+
     this.connected = false;
 
-    if (!this.disable_reconnection)
-      setTimeout(() => this.connect_websocket(this.ws_config), 200);
+    if (!this.disable_reconnection) {
+      const timer = setTimeout(() => {
+        this.connect_websocket(this.ws_config);
+        clearTimeout(timer);
+      }, 1000);
+    }
   }
 
   private async connect_websocket(config: wsConfig) {
@@ -105,21 +110,23 @@ class awaitableWs {
       (this.wsp as taro_ws).onMessage(e => {
         this.on_json_rpc_reply(e as any);
       });
+
       (this.wsp as taro_ws).onClose(() => {
         this.handle_ws_close();
       });
-      (this.wsp as taro_ws).onOpen(msg => {
-        this.connected = true;
-        this.openFn(msg);
+
+      (this.wsp as taro_ws).onOpen(() => {
+        this.handle_ws_open();
       });
     } else {
       (this.wsp as WebSocket).onmessage = e => this.on_json_rpc_reply(e);
-      (this.wsp as WebSocket).onclose = e => {
+
+      (this.wsp as WebSocket).onclose = () => {
         this.handle_ws_close();
       };
-      (this.wsp as WebSocket).onopen = e => {
-        this.connected = true;
-        this.openFn(e);
+
+      (this.wsp as WebSocket).onopen = () => {
+        this.handle_ws_open();
       };
     }
   }
@@ -127,13 +134,6 @@ class awaitableWs {
   private get is_browser() {
     return typeof window === "object";
   }
-
-  public openFn = (msg: any) => {
-    if (!this.ws_config.openFn) {
-      return;
-    }
-    this.ws_config.openFn(msg);
-  };
 
   private async ensure_connected() {
     if (this.connected) return;
@@ -146,7 +146,7 @@ class awaitableWs {
     return new Promise(resolve => {
       setTimeout(() => {
         resolve();
-      }, n || 100);
+      }, n || 800);
     });
   }
 

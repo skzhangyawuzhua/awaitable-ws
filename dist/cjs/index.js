@@ -13151,20 +13151,17 @@ __export(src_exports, {
 module.exports = __toCommonJS(src_exports);
 var import_rxjs = __toESM(require_cjs());
 var awaitableWs = class {
-  //   private check_timer: number;
   constructor(config) {
     this.connected = false;
     this.disable_reconnection = false;
-    this.openFn = (msg) => {
-      if (!this.ws_config.openFn) {
-        return;
-      }
-      this.ws_config.openFn(msg);
+    this.handle_ws_open = () => {
+      this.connection_status_object.next(true);
+      this.connected = true;
+      this.ws_config.openFn && this.ws_config.openFn();
     };
     this.id = 0;
     this.cookie = "";
     this.callbacks = /* @__PURE__ */ new Map();
-    console.log(`globalThis ${globalThis}`);
     this.ws_config = config;
     this.connection_status_object = new import_rxjs.Subject();
     this.connect_websocket(config);
@@ -13177,8 +13174,12 @@ var awaitableWs = class {
     this.callbacks.clear();
     this.connection_status_object.next(false);
     this.connected = false;
-    if (!this.disable_reconnection)
-      setTimeout(() => this.connect_websocket(this.ws_config), 200);
+    if (!this.disable_reconnection) {
+      const timer = setTimeout(() => {
+        this.connect_websocket(this.ws_config);
+        clearTimeout(timer);
+      }, 1e3);
+    }
   }
   async connect_websocket(config) {
     const { url, is_taro, protocols } = config;
@@ -13221,18 +13222,16 @@ var awaitableWs = class {
       this.wsp.onClose(() => {
         this.handle_ws_close();
       });
-      this.wsp.onOpen((msg) => {
-        this.connected = true;
-        this.openFn(msg);
+      this.wsp.onOpen(() => {
+        this.handle_ws_open();
       });
     } else {
       this.wsp.onmessage = (e) => this.on_json_rpc_reply(e);
-      this.wsp.onclose = (e) => {
+      this.wsp.onclose = () => {
         this.handle_ws_close();
       };
-      this.wsp.onopen = (e) => {
-        this.connected = true;
-        this.openFn(e);
+      this.wsp.onopen = () => {
+        this.handle_ws_open();
       };
     }
   }
@@ -13250,7 +13249,7 @@ var awaitableWs = class {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve();
-      }, n || 100);
+      }, n || 800);
     });
   }
   is_connected() {
