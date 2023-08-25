@@ -71,19 +71,8 @@ class awaitableWs {
     if (is_taro) {
       const taro = await import("@tarojs/taro");
 
-      const local_cookie = taro.getStorageSync("cookie");
-
-      const header: { "content-type": string; Cookie?: string } = {
-        "content-type": "application/json",
-      };
-
-      if (local_cookie) {
-        header["Cookie"] = local_cookie;
-      }
-
       const mini = await taro.connectSocket({
         url,
-        header,
         protocols: protocols ? [protocols] : void 0,
       });
 

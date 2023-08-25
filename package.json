@@ -2,7 +2,8 @@
   "name": "awaitable-ws",
   "version": "1.0.0",
   "description": "awaitable websocket client . compatible with taro.",
-  "main": "dist/index.js",
+  "main": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "testserver": "node ./test/server",
