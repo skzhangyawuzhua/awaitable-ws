@@ -1,6 +1,6 @@
 {
   "name": "awaitable-ws",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "awaitable websocket client . compatible with taro.",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
