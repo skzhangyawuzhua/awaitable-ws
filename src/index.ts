@@ -3,7 +3,6 @@ import type { WebSocket as NodeWs } from "ws";
 
 interface wsConfig {
   url: string;
-  is_taro?: boolean; //小程序
   protocols?: string;
   openFn?: () => void;
 }
@@ -21,6 +20,8 @@ interface taro_ws extends Omit<Taro.SocketTask, "send" | "close"> {
 class awaitableWs {
   public connection_status_object: Subject<boolean>;
   public ws_config: wsConfig;
+
+  public is_taro: boolean = false;
 
   private connected = false;
   wsp!: WebSocket | NodeWs | taro_ws;
@@ -64,11 +65,17 @@ class awaitableWs {
   }
 
   private async connect_websocket(config: wsConfig) {
-    const { url, is_taro, protocols } = config;
+    const { url, protocols } = config;
+
+    try {
+      if (process.env.TARO_ENV) {
+        this.is_taro = true;
+      }
+    } catch (e) {}
 
     this.callbacks.clear();
 
-    if (is_taro) {
+    if (this.is_taro) {
       const taro = await import("@tarojs/taro");
 
       const mini = await taro.connectSocket({
@@ -95,7 +102,7 @@ class awaitableWs {
       this.wsp = new ws(url);
     }
 
-    if (this.ws_config.is_taro) {
+    if (this.is_taro) {
       (this.wsp as taro_ws).onMessage(e => {
         this.on_json_rpc_reply(e as any);
       });

@@ -818,6 +818,7 @@ var AnonymousSubject = function(_super) {
 // src/index.ts
 var awaitableWs = class {
   constructor(config2) {
+    this.is_taro = false;
     this.connected = false;
     this.disable_reconnection = false;
     this.handle_ws_open = () => {
@@ -848,9 +849,15 @@ var awaitableWs = class {
     }
   }
   async connect_websocket(config2) {
-    const { url, is_taro, protocols } = config2;
+    const { url, protocols } = config2;
+    try {
+      if (process.env.TARO_ENV) {
+        this.is_taro = true;
+      }
+    } catch (e) {
+    }
     this.callbacks.clear();
-    if (is_taro) {
+    if (this.is_taro) {
       const taro = await import("@tarojs/taro");
       const mini = await taro.connectSocket({
         url,
@@ -873,7 +880,7 @@ var awaitableWs = class {
       const ws = (await Promise.resolve().then(() => __toESM(require_browser()))).default;
       this.wsp = new ws(url);
     }
-    if (this.ws_config.is_taro) {
+    if (this.is_taro) {
       this.wsp.onMessage((e) => {
         this.on_json_rpc_reply(e);
       });

@@ -5,7 +5,7 @@
 
     对应的 webscoket 服务端只需要将收到的参数中的 id 原封不动的传回客户端即可。
 
-    另外，awaitable-ws通过添加 taro 和 ws 的实现，兼容浏览器以及 node.js、小程序 的使用场景。
+    另外，awaitable-ws通过添加 taro 和 ws 的实现，兼容浏览器、 node.js、小程序、react-native 等多种场景。
     
 ### 安装
     pnpm add awaitable-ws

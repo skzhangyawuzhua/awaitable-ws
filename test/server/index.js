@@ -16,9 +16,7 @@ wss.on("connection", (ws, request, rep) => {
 
     try {
       data = JSON.parse(msg);
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
 
     if (data === "ping") {
       ws.send("pong");

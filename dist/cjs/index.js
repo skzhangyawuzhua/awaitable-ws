@@ -13152,6 +13152,7 @@ module.exports = __toCommonJS(src_exports);
 var import_rxjs = __toESM(require_cjs());
 var awaitableWs = class {
   constructor(config) {
+    this.is_taro = false;
     this.connected = false;
     this.disable_reconnection = false;
     this.handle_ws_open = () => {
@@ -13182,9 +13183,15 @@ var awaitableWs = class {
     }
   }
   async connect_websocket(config) {
-    const { url, is_taro, protocols } = config;
+    const { url, protocols } = config;
+    try {
+      if (process.env.TARO_ENV) {
+        this.is_taro = true;
+      }
+    } catch (e) {
+    }
     this.callbacks.clear();
-    if (is_taro) {
+    if (this.is_taro) {
       const taro = await import("@tarojs/taro");
       const mini = await taro.connectSocket({
         url,
@@ -13207,7 +13214,7 @@ var awaitableWs = class {
       const ws = (await Promise.resolve().then(() => (init_wrapper(), wrapper_exports))).default;
       this.wsp = new ws(url);
     }
-    if (this.ws_config.is_taro) {
+    if (this.is_taro) {
       this.wsp.onMessage((e) => {
         this.on_json_rpc_reply(e);
       });

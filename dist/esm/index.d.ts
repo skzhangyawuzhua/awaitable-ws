@@ -2,7 +2,6 @@ import { Subject } from "rxjs";
 import type { WebSocket as NodeWs } from "ws";
 interface wsConfig {
     url: string;
-    is_taro?: boolean;
     protocols?: string;
     openFn?: () => void;
 }
@@ -13,6 +12,7 @@ interface taro_ws extends Omit<Taro.SocketTask, "send" | "close"> {
 declare class awaitableWs {
     connection_status_object: Subject<boolean>;
     ws_config: wsConfig;
+    is_taro: boolean;
     private connected;
     wsp: WebSocket | NodeWs | taro_ws;
     private disable_reconnection;
