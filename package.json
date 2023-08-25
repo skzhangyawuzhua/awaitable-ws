@@ -11,7 +11,8 @@
     "webclient": "node ./test/web-client",
     "build": "pnpm build_esm && pnpm build_cjs",
     "build_esm": "rm -rf ./dist/esm && tsc -p ./tsconfig.json && node ./esbuild && mv ./dist/index.d.ts ./dist/esm/index.d.ts",
-    "build_cjs": "rm -rf ./dist/cjs && tsc -p ./tsconfig.json && node ./esbuild --type cjs --target node && mv ./dist/index.d.ts ./dist/cjs/index.d.ts"
+    "build_cjs": "rm -rf ./dist/cjs && tsc -p ./tsconfig.json && node ./esbuild --type cjs --target node && mv ./dist/index.d.ts ./dist/cjs/index.d.ts",
+    "pub": "npm version patch && git push && npm publish"
   },
   "repository": {
     "type": "git",
